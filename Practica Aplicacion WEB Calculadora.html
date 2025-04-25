@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multiplica con Amigos</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: #fef6e4;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #ff6f61;
+    }
+    .card {
+      background-color: #fff3c4;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .card.correct {
+      animation: pop 0.3s ease;
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    .question {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    .character {
+      font-size: 48px;
+    }
+    input[type="number"] {
+      font-size: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #ffb703;
+      width: 100px;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #06d6a0;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+    }
+    .feedback {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .score, .highscore {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #118ab2;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐯 Multiplica con Amigos 🦊</h1>
+  <div class="score" id="score">Puntos: 0</div>
+  <div class="highscore" id="highscore">🏆 Récord: 0</div>
+  <div class="card" id="card">
+    <div class="character" id="character">🐸</div>
+    <div class="question" id="question">¿Cuánto es 2 × 3?</div>
+    <input type="number" id="answer" placeholder="Tu respuesta" />
+    <br/>
+    <button onclick="checkAnswer()">Verificar</button>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- Sonidos embebidos (puedes reemplazar estos con enlaces si prefieres) -->
+  <audio id="sound-correct" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEA... (acortado por espacio)">
+    Tu navegador no soporta audio.
+  </audio>
+  <audio id="sound-wrong" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEA... (acortado por espacio)">
+    Tu navegador no soporta audio.
+  </audio>
+
+  <script>
+    const characters = ['🐶', '🐱', '🐵', '🦊', '🐸', '🐼', '🦁', '🐷', '🐻', '🐯'];
+    let num1, num2, correctAnswer, score = 0;
+    let highscore = localStorage.getItem('highscore') || 0;
+
+    const questionEl = document.getElementById('question');
+    const answerEl = document.getElementById('answer');
+    const characterEl = document.getElementById('character');
+    const feedbackEl = document.getElementById('feedback');
+    const scoreEl = document.getElementById('score');
+    const highscoreEl = document.getElementById('highscore');
+    const cardEl = document.getElementById('card');
+
+    const soundCorrect = document.getElementById('sound-correct');
+    const soundWrong = document.getElementById('sound-wrong');
+
+    highscoreEl.innerText = `🏆 Récord: ${highscore}`;
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function newQuestion() {
+      num1 = getRandomInt(1, 10);
+      num2 = getRandomInt(1, 10);
+      correctAnswer = num1 * num2;
+      questionEl.innerText = `¿Cuánto es ${num1} × ${num2}?`;
+      characterEl.innerText = characters[getRandomInt(0, characters.length - 1)];
+      answerEl.value = '';
+      feedbackEl.innerText = '';
+    }
+
+    function checkAnswer() {
+      const userAnswer = parseInt(answerEl.value);
+      if (userAnswer === correctAnswer) {
+        score++;
+        scoreEl.innerText = `Puntos: ${score}`;
+        feedbackEl.innerText = '🎉 ¡Correcto!';
+        feedbackEl.style.color = 'green';
+        soundCorrect.currentTime = 0;
+        soundCorrect.play();
+        cardEl.classList.add('correct');
+        if (score > highscore) {
+          highscore = score;
+          localStorage.setItem('highscore', highscore);
+          highscoreEl.innerText = `🏆 Récord: ${highscore}`;
+        }
+        setTimeout(() => {
+          cardEl.classList.remove('correct');
+          newQuestion();
+        }, 1000);
+      } else {
+        feedbackEl.innerText = '❌ Intenta de nuevo';
+        feedbackEl.style.color = 'red';
+        soundWrong.currentTime = 0;
+        soundWrong.play();
+      }
+    }
+
+    // Inicializa
+    newQuestion();
+  </script>
+</body>
+</html>
